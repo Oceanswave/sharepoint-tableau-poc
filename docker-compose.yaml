@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  tableau:
+    image: sharepoint-tableau-poc/tableau-server
+    build:
+      context: ./tableau
+      dockerfile: Dockerfile
+    restart: always
+    privileged: true
+    ports:
+      - 8080:80 # Gateway
+      - 8850:8850 # TSM
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # tableau_data:/tableau/data
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+  backend:
