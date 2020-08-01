@@ -6,8 +6,11 @@ services:
     build:
       context: ./tableau
       dockerfile: Dockerfile
+    command: tableau_server_install
     restart: always
     privileged: true
+    cap_add:
+      - CAP_SYS_ADMIN
     ports:
       - 8080:80 # Gateway
       - 8850:8850 # TSM

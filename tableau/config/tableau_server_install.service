@@ -1,0 +1,17 @@
+[Unit]
+Description=Tableau Silent Install in Docker
+
+[Service]
+Type=oneshot
+ExecStart=/tableau/server-install/linux/automated-installer/automated-installer \
+    -s /tableau/settings/secrets \
+    -f /tableau/settings/config.json \
+    -r /tableau/settings/registration.json \
+    --accepteula \
+    -d /tableau/data \
+    -a tsmadmin \
+    "/tableau/tableau-server-2020-2-3.x86_64.rpm"
+RemainAfterExit=True
+
+[Install]
+WantedBy=multi-user.target

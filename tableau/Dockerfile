@@ -19,7 +19,8 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.
         iproute \
         curl \
         git \
-        sudo
+        sudo && \
+    yum clean all
    
 # Clone the Linux Automated Installer https://github.com/tableau/server-install-script-samples/tree/master/linux/automated-installer
 WORKDIR /tableau
@@ -27,10 +28,11 @@ RUN git clone https://github.com/tableau/server-install-script-samples server-in
 
 ARG TABLEAU_LICENSE_KEY=""
 ENV TABLEAU_VERSION="2020.2.3" \
+    TABLEAU_VERSION_NAME="2020-2-3" \
     LANG=en_US.UTF-8
 
 # Download the tableau server binaries (https://www.tableau.com/support/releases/server)
-RUN curl "https://downloads.tableau.com/esdalt/\${TABLEAU_VERSION}/tableau-server-\${TABLEAU_VERSION//./-}.x86_64.rpm" --output "tableau-server-\${TABLEAU_VERSION//./-}.x86_64.rpm"
+RUN curl "https://downloads.tableau.com/esdalt/${TABLEAU_VERSION}/tableau-server-${TABLEAU_VERSION_NAME}.x86_64.rpm" --output "tableau-server-${TABLEAU_VERSION_NAME}.x86_64.rpm"
 
 # Download tableau drivers (https://www.tableau.com/support/drivers)
 RUN curl "https://downloads.tableau.com/drivers/linux/yum/tableau-driver/tableau-postgresql-odbc-09.06.0500-1.x86_64.rpm" --output "tableau-postgresql-odbc-09.06.0500-1.x86_64.rpm"
@@ -67,15 +69,15 @@ RUN echo 'echo; echo mem: 32768' \
 	&& chmod +x /usr/local/bin/free
 RUN echo mem: $(free -m | awk 'NR == 2 { print $2; }')
 
-# Run the installer, expecting that /settings contains the config.json, registration.json, and secrets file.
-RUN /tableau/server-install/linux/automated-installer/automated-installer \
-    -s /tableau/settings/secrets \
-    -f /tableau/settings/config.json \
-    -r /tableau/settings/registration.json \
-    --accepteula \
-    -d /tableau/data \
-    -a tsmadmin \
-    "/tableau/tableau-server-\${TABLEAU_VERSION//./-}.x86_64.rpm"
+# Run the installer, expecting that /config contains the config.json, registration.json, and secrets file.
+# RUN /tableau/server-install/linux/automated-installer/automated-installer \
+#     -s /tableau/config/secrets \
+#     -f /tableau/config/config.json \
+#     -r /tableau/config/registration.json \
+#     --accepteula \
+#     -d /tableau/data \
+#     -a tsmadmin \
+#     "/tableau/tableau-server-${TABLEAU_VERSION_NAME}.x86_64.rpm"
 
 # Run the driver installers
 RUN yum install -y \
@@ -87,8 +89,9 @@ RUN yum install -y \
 EXPOSE 80 443 8316 8381 8731 8749 8780 8850
 
 # Start tableau as a systemd service
-# RUN mkdir -p /etc/systemd/system/ && \
-#     cp /tableau/config/tableau_server_install.service /etc/systemd/system/ && \
-#     systemctl enable tableau_server_install 
+RUN mkdir -p /etc/systemd/system/ && \
+    cp /tableau/config/tableau_server_install.service /etc/systemd/system/ && \
+    systemctl enable tableau_server_install.service
 
+CMD ["/usr/sbin/init"]
 # example: docker run --rm --privileged -itd -p8850:8850 -v/sys/fs/cgroup:/sys/fs/cgroup:ro sharepoint-tableau-poc/tableau-server
