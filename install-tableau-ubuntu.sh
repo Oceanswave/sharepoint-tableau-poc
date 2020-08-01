@@ -4,7 +4,7 @@ export TABLEAU_VERSION=2020.2.4
 export TSM_USER_NAME=tsmadmin
 export TSM_USER_PASSWORD=tsmadmin
 
-sudo apt-get -y install git curl gdebi-core
+sudo apt-get -y install git curl unzip gdebi-core
 git clone https://github.com/tableau/server-install-script-samples server-install --depth 3
 
 # Download the tableau server binaries (https://www.tableau.com/support/releases/server)
@@ -37,4 +37,27 @@ sudo gdebi -n tableau-postgresql-odbc_09.06.0501_amd64.deb
 sudo gdebi -n tableau-freetds_1.00.40_amd64.deb
 
 sudo apt-get update && sudo apt-get install -y iodbc unixodbc-dev
-sudo gdebi -n SharePoint_Tableau_6883.x86_64.deb # Post-Install setup required.
+sudo gdebi -n SharePoint_Tableau_6883.x86_64.deb
+
+# Setup ngrok
+
+sudo cp ngrok.service /lib/systemd/system/
+
+sudo mkdir -p /opt/ngrok
+cp ngrok.yml /opt/ngrok
+
+cd /opt/ngrok
+curl https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+unzip ngrok-stable-linux-amd64.zip
+rm ngrok-stable-linux-amd64.zip
+sudo chmod +x ngrok
+
+sudo systemctl enable ngrok.service
+sudo systemctl start ngrok.service
+
+# install xrdp
+
+sudo apt-get -y remove dbus-user-session
+sudo apt-get -y install dbus-x11 xrdp
+sudo adduser xrdp ssl-cert
+sudo ufw allow 3389
