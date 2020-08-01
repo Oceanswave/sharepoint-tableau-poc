@@ -123,3 +123,6 @@ dist
 /data/**/*
 !/data/*/
 !/data/*/.gitkeep
+
+server-install/
+*.deb
