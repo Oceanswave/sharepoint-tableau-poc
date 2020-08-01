@@ -1,3 +1,5 @@
+#! /bin/bash
+
 export TABLEAU_VERSION=2020.2.4
 export TSM_USER_NAME=tsmadmin
 export TSM_USER_PASSWORD=tsmadmin
@@ -9,6 +11,10 @@ git clone https://github.com/tableau/server-install-script-samples server-instal
 curl "https://downloads.tableau.com/esdalt/${TABLEAU_VERSION}/tableau-server-${TABLEAU_VERSION//\./-}_amd64.deb" --output "tableau-server-${TABLEAU_VERSION//\./-}_amd64.deb"
 
 sudo useradd -m ${TSM_USER_NAME} && echo "${TSM_USER_NAME}:${TSM_USER_PASSWORD}" | sudo chpasswd && sudo adduser ${TSM_USER_NAME} sudo
+
+echo 'seq 0 9 | xargs -I% -- echo %,%' \
+	| sudo tee /usr/local/bin/lscpu \
+	&& sudo chmod +x /usr/local/bin/lscpu
 
 # To run a Tableau Server cluster, you must disable temporary IPv6 addresses on all nodes in the cluster. For details, see:
 # http://kb.tableau.com/articles/knowledgebase/temporary-ipv6 (Disabling temporary IPv6 addresses)
