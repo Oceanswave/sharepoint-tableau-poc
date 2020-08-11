@@ -3,16 +3,22 @@ authtoken: <add_your_token_here>
 tunnels:
   tableau:
     proto: tls
-    addr: 80
+    addr: 443
     hostname: <tableau domain name here>
     inspect: false
     bind_tls: true
     crt: <cert here>
-    key: <key here>
+    key:  <key here>
+  tableau-http:
+    proto: http
+    addr: 80
+    hostname: <tableau domain name here>
+    inspect: false
+    bind_tls: false
   tableau-services-manager:
     proto: tls
     addr: 8850
-    hostname: <tsm domain here>
+    hostname: <tsm domain name here>
     bind_tls: true
     host_header: localhost
     inspect: false
