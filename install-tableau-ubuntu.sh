@@ -61,3 +61,8 @@ sudo apt-get -y remove dbus-user-session
 sudo apt-get -y install dbus-x11 xrdp
 sudo adduser xrdp ssl-cert
 sudo ufw allow 3389
+
+# Set some settings - needs to be run manually from as the tsmadmin user created above after tableau is installed
+# tsm configuration set -k wgserver.clickjack_defense.enabled -v false
+# tsm configuration set -k content_security_policy.directive.script_src -v "* blob: 'unsafe-eval'"
+# tsm pending-changes apply
